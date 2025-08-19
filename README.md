@@ -14,4 +14,9 @@ The base project is using the most recent version of visual studio community wit
 
 - SQLite - database 
 - ASP.NET - backend 
-- React – frontend 
+- React – frontend
+  
+================================================ Interview Assignement topics ===================================================
+Frontend - API, CSS, Buttons, Operational Tables according to instruction by the test description
+Backend - CRUD (Create, Read, Update and Delete) functionalities as well Dependancy Injection
+Database - Freeze the old Sqlite Database, create new database which is based on the old system 
