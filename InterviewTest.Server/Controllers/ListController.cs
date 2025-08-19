@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using InterviewTest.Server.Model;
+using InterviewTest.Server.Repository;
 
 namespace InterviewTest.Server.Controllers
 {
@@ -10,27 +12,79 @@ namespace InterviewTest.Server.Controllers
         //Only allowed to read data from the database.
 
         private readonly ILogger<ListController> _logger;
-        
+        private readonly EmployeeRepository _repo;
 
-        public ListController()
+        //Dependency Injection
+        public ListController(EmployeeRepository repo)
         {
-
+            _repo = repo;
         }
 
         /*
-         * List API methods goe here
-         * */
+         * List API methods goes here
+         */
 
+        //this will match to route 'app/list'
 
-        //Summary for the API method
+        [HttpGet("FetchEmployeeQueries")]
+        public async Task<EmployeeQueryData> FetchEmployeeQueries()
+        {
+            /////***** Summary for the API method *****\\\\\
 
-        //Increment Value of the list item
-        //If name starts with 'E', increment by +1
-        //If name starts with 'G', increment by +10
-        //All other names increment by +100
+            //Increment Value of the list item\\
 
+            //1- If name starts with 'E', increment by +1
+            //2- If name starts with 'G', increment by +10
+            //3- All other names increment by +100
+            //List the sum of all values for all names starting with 'A', 'B', 'C' whit condition  only present the data where the summed values are greater than or equals to 11,171
+            EmployeeQueryData queryData = new EmployeeQueryData();
+            var orginalEmployees = _repo.GetEmployees();
 
-        /*************** Under Review ****************/
+            List<Employee> tempEmployees = new List<Employee>();
+            foreach (Employee em in orginalEmployees)
+            {
+                var tempEmployee = em;
+
+                //starrting with 'E'
+                if (em.Name.ToLower().StartsWith("e"))
+                {
+                    tempEmployee.Value += 1;
+                }
+
+                //Starting with 'G'
+                else if (em.Name.ToLower().StartsWith("g"))
+                {
+                    tempEmployee.Value += 10;
+                }
+
+                //All other names
+                else
+                {
+                    tempEmployee.Value += 100;
+                }
+
+                tempEmployees.Add(tempEmployee);
+            }
+
+            queryData.Employees = tempEmployees;
+
+            //LINQ queries and I am chaining the "Where" and "Sum" methods together to filter and sum the values in a single query.
+            var sumA = orginalEmployees.Where(em => em.Name.ToLower().StartsWith("a")).Sum(em => em.Value);
+            var sumB = orginalEmployees.Where(em => em.Name.ToLower().StartsWith("b")).Sum(em => em.Value);
+            var sumC = orginalEmployees.Where(em => em.Name.ToLower().StartsWith("c")).Sum(em => em.Value);
+
+            queryData.SumA = sumA;
+            queryData.SumB = sumB;
+            queryData.SumC = sumC;
+
+            return queryData;
+        }
+
+        
+    }
+        /*************** Under Review ****************/ //Results not working or use
+        /*************** Logic is not in correct path way ***************/
+
         /*[HttpPost("increment")]
         public async Task<IActionResult> IncrementValues()
         {
@@ -120,5 +174,4 @@ namespace InterviewTest.Server.Controllers
             return NotFound("Sum is less than 11171");
         }
         */
-    }
 }

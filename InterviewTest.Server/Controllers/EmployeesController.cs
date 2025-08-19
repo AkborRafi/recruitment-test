@@ -1,6 +1,7 @@
 ﻿using InterviewTest.Server.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
 
 namespace InterviewTest.Server.Controllers
 {
@@ -55,6 +56,9 @@ namespace InterviewTest.Server.Controllers
                             Value = reader.GetInt32(valueOrdinal)
                         });
                     }
+
+                   // It is already done by using statement. (line: 35)
+                   // reader.Close();
                 }
 
 
@@ -62,14 +66,94 @@ namespace InterviewTest.Server.Controllers
                 -----------------------------
                 *No need to use this code in production!
                 *It is only for demonstration purposes.
-                *It is already using by using statement. (line:28)
+                *It is already done by using statement. (line:28)
                 ------------------------------
                 connection.Close();
                 connection.Dispose();
                  */
             }
 
-            return employees;
+            var sortedEmployees = employees.OrderBy(e => e.Name).ToList();
+            return sortedEmployees; //return the sorted list of employees objects to the caller
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] Employee employee)
+        {
+            var connectionStringBuilder = new SqliteConnectionStringBuilder() { DataSource = "./SqliteDB.db" };
+            using (var connection = new SqliteConnection(connectionStringBuilder.ConnectionString))
+            {
+                connection.Open();
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = "INSERT INTO Employees (Name, Value) VALUES (@name, @value)";
+                SqliteParameter nameParam = new SqliteParameter("@name",SqliteType.Text);
+                nameParam.Value = employee.Name;
+                SqliteParameter valueParam = new SqliteParameter("@value", SqliteType.Integer);
+                valueParam.Value = employee.Value;
+                cmd.Parameters.AddRange(new[] { nameParam, valueParam });
+
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                    return Ok();
+                }
+                catch (SqliteException ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
+        [HttpPut("{name}")]
+        public IActionResult Put(string name, [FromBody] Employee employee)
+        {
+            var connectionStringBuilder = new SqliteConnectionStringBuilder() { DataSource = "./SqliteDB.db" };
+            using (var connection = new SqliteConnection(connectionStringBuilder.ConnectionString))
+            {
+                connection.Open();
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = "UPDATE Employees SET Name = @newName, Value = @value WHERE Name = @name";
+                cmd.Parameters.AddWithValue("@newName", employee.Name);
+                cmd.Parameters.AddWithValue("@value", employee.Value);
+                cmd.Parameters.AddWithValue("@name", name);
+
+                try
+                {
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    if (rowsAffected == 0)
+                        return NotFound("Employee not found.");
+                    return Ok();
+                }
+                catch (SqliteException ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+
+        [HttpDelete("{name}")]
+        public IActionResult Delete(string name)
+        {
+            var connectionStringBuilder = new SqliteConnectionStringBuilder() { DataSource = "./SqliteDB.db" };
+            using (var connection = new SqliteConnection(connectionStringBuilder.ConnectionString))
+            {
+                connection.Open();
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = "DELETE FROM Employees WHERE Name = @name";
+                cmd.Parameters.AddWithValue("@name", name);
+
+                try
+                {
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    if (rowsAffected == 0)
+                        return NotFound("Employee not found.");
+                    return Ok();
+                }
+                catch (SqliteException ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
         }
     }
 }

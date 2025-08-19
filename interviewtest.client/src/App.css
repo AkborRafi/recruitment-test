@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+body {
+    font-family: 'Roboto Mono', monospace;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.employeeList{
+    list-style: none;
+}
+
+.listItem {
+    padding: 10px 5px;
+    position: relative;
+    font-size: 1.25rem;
+}
+
+.listItem:nth-child(odd){
+    background-color: rgba(0,0,0,0.3);
+}
+
+.listItem:before {
+    content: '\22B3';
+    position: absolute;
+    left: -20px;
+    top: 8px;
+    font-size: inherit;
+    color: green;
+}
+
+.customBtn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .25rem .5rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+    .customBtn:hover {
+        background-color: #5397f5;
+    }
+

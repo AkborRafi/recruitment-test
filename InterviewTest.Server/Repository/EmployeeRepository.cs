@@ -27,7 +27,7 @@ namespace InterviewTest.Server.Repository
             // new command tied to that specific connection
             using (var cmd = _conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT Name, Value FROM Employee";
+                cmd.CommandText = "SELECT Name, Value FROM Employees";
 
                 // Execute the command and read the results, which lets to read the data rows one by one
                 using (var reader = cmd.ExecuteReader())
@@ -36,17 +36,20 @@ namespace InterviewTest.Server.Repository
                     {
                         employees.Add(new Employee
                         {
-                            // Get the column index of the "Name" column
-                            Name = reader.GetString(reader.GetOrdinal("Name")),
-                            // Get the column index of the "Value" column
-                            Value = reader.GetInt32(reader.GetOrdinal("Value"))
+                            Name = reader.GetString(0),
+                            Value = reader.GetInt32(1)
                         });
-                        
                     }
                 }
             }
             _conn.Close();
-            return employees; //return the list of employees objects to the caller
+            var sortedEmployees = employees.OrderBy(e => e.Name).ToList();
+            return sortedEmployees; //return the sorted list of employees objects to the caller
+        }
+
+        public List<Employee> GetEmployees(bool adultEmployees)
+        {
+            return new List<Employee>();
         }
     }
     
