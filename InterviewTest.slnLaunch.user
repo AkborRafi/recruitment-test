@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "InterviewTest.Server\\InterviewTest.Server.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "interviewtest.client\\interviewtest.client.esproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
